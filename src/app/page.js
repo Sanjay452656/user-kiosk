@@ -1,9 +1,10 @@
-import Image from "next/image";
+import KioskApp from '../components/KioskApp'
+
+export const metadata = {
+  title: 'M9Vends Kiosk',
+  description: 'M9Vends customer-facing vending kiosk — touch to start shopping.',
+}
 
 export default function Home() {
-  return (
-<div className="text-center text-white shadow-2xl bg-amber-200">
-  User - Kiosk
-</div>
-  );
+  return <KioskApp />
 }
