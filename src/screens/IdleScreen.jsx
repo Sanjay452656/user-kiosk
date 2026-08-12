@@ -11,7 +11,7 @@ export default function IdleScreen() {
   const handleTouch = async () => {
     goTo('catalog')
     try {
-      const data = await getCatalog(deviceVID) // deviceVID === machine_id
+      const data = await getCatalog(deviceVID)
       setCatalog(data.catalog)
     } catch {
       setCatalogError('Failed to load products. Please try again.')
@@ -21,24 +21,52 @@ export default function IdleScreen() {
   return (
     <div className="idle-screen" onClick={handleTouch} role="button" tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && handleTouch()}>
+
+      {/* Animated ambient background */}
       <div className="idle-bg-animation" />
 
-      <div className="idle-logo">
-        <span className="boot-logo-m">M9</span>
-        <span className="boot-logo-v">Vends</span>
-      </div>
-
-      <div className="idle-tagline">Fresh Flavours, Instant Delivery</div>
-
-      <div className="idle-cta-wrapper">
-        <div className="idle-cta-ring" />
-        <h1 className="idle-cta">Touch to Start</h1>
-      </div>
-
+      {/* Particles (logic preserved, hidden in new design) */}
       <div className="idle-particles">
         {[...Array(6)].map((_, i) => (
           <div key={i} className={`particle particle-${i + 1}`} />
         ))}
+      </div>
+
+      {/* Central card */}
+      <div className="idle-card">
+        {/* Brand wordmark */}
+        <h1 className="idle-logo">M9Vends</h1>
+
+        {/* Tagline */}
+        <p className="idle-tagline">Fresh Flavours, Instant Delivery</p>
+
+        {/* CTA */}
+        <div className="idle-cta-wrapper">
+          {/* ring kept for structure, hidden via CSS */}
+          <div className="idle-cta-ring" />
+          <button className="idle-cta">
+            <span className="material-symbols-outlined" style={{ fontSize: 32 }}>touch_app</span>
+            Touch to Start
+          </button>
+        </div>
+
+        {/* Footer trust marks */}
+        <div className="idle-footer">
+          <span>
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>verified</span>
+            Secure
+          </span>
+          <span>•</span>
+          <span>
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>bolt</span>
+            Instant
+          </span>
+          <span>•</span>
+          <span>
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>eco</span>
+            Fresh
+          </span>
+        </div>
       </div>
     </div>
   )

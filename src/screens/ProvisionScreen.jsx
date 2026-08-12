@@ -29,10 +29,9 @@ export default function ProvisionScreen() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Dev bypass — force provision state with the deviceVID from the last wake-up response
   const skipToIdle = () => {
     setDeviceInfo({
-      deviceVID:     '6a67ad9aa95ea9b1fe046186', // from the live wake-up response
+      deviceVID:     '6a67ad9aa95ea9b1fe046186',
       isProvisioned: true,
       kioskBrowserURL: null,
       mqtt: null,
@@ -42,34 +41,87 @@ export default function ProvisionScreen() {
 
   return (
     <div className="provision-screen">
-      <div className="provision-badge">Setup Required</div>
-      <h1 className="provision-title">Device Not Activated</h1>
-      <p className="provision-subtitle">
-        Scan this QR code with the M9Vends Admin App to activate this machine
-      </p>
+      {/* Header */}
+      <header>
+        <div className="provision-header-logo">M9Vends</div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            aria-label="Help"
+            style={{
+              width: 'var(--touch-min)', height: 'var(--touch-min)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: 'var(--radius-lg)', border: 'none', background: 'transparent',
+              cursor: 'pointer', transition: 'background 0.15s',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 24, color: 'var(--on-surface-variant)' }}>help</span>
+          </button>
+          <button
+            aria-label="Info"
+            style={{
+              width: 'var(--touch-min)', height: 'var(--touch-min)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: 'var(--radius-lg)', border: 'none', background: 'transparent',
+              cursor: 'pointer', transition: 'background 0.15s',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 24, color: 'var(--on-surface-variant)' }}>info</span>
+          </button>
+        </div>
+      </header>
 
-      <div className="qr-wrapper">
-        <QRCodeSVG
-          value={serialNumber}
-          size={240}
-          level="M"
-          bgColor="#ffffff"
-          fgColor="#050a14"
-        />
-      </div>
+      {/* Main */}
+      <main className="provision-main">
+        <div className="provision-content">
+          {/* Intro */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--stack-md)', textAlign: 'center' }}>
+            <div className="provision-badge">Setup Required</div>
+            <h1 className="provision-title">Device Not Activated</h1>
+            <p className="provision-subtitle">
+              Scan this QR code with the M9Vends Admin App to activate this machine
+            </p>
+          </div>
 
-      <p className="serial-label">Serial: {serialNumber}</p>
+          {/* Card */}
+          <div className="provision-card">
+            <div className="provision-card-inner">
+              {/* QR Code */}
+              <div className="qr-wrapper">
+                <QRCodeSVG
+                  value={serialNumber}
+                  size={224}
+                  style={{ width: '100%', height: 'auto', maxWidth: 224, maxHeight: 224 }}
+                  level="M"
+                  bgColor="#ffffff"
+                  fgColor="#000000"
+                />
+              </div>
 
-      <div className="waiting-indicator">
-        <span className="pulse-dot" />
-        <span>Waiting for activation...</span>
-      </div>
+              {/* Serial Number */}
+              <div className="serial-area">
+                <span className="serial-label-text">Serial Number</span>
+                <div className="serial-label">{serialNumber}</div>
+              </div>
+            </div>
 
-      {IS_DEV && (
-        <button className="dev-skip-btn" onClick={skipToIdle}>
-          ⚡ Skip to Idle (Dev Only)
-        </button>
-      )}
+            {/* Status bar */}
+            <div className="provision-status-bar">
+              <span className="pulse-dot" />
+              <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '0.05em', color: 'var(--on-surface-variant)' }}>
+                Waiting for activation...
+              </span>
+            </div>
+          </div>
+
+          <p className="provision-footer">Ensure your kiosk is connected to the local network.</p>
+
+          {IS_DEV && (
+            <button className="dev-skip-btn" onClick={skipToIdle}>
+              ⚡ Skip to Idle (Dev Only)
+            </button>
+          )}
+        </div>
+      </main>
     </div>
   )
 }
