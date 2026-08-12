@@ -7,9 +7,13 @@ export default function CatalogScreen() {
   const {
     catalog, catalogError,
     cart, addToCart, updateQuantity,
-    cartTotal, cartItemCount, goTo,
+    goTo,
   } = useKioskStore()
   const [search, setSearch] = useState('')
+
+  // Derived directly from reactive `cart` so the badge & total update instantly
+  const totalQty   = cart.reduce((s, i) => s + i.quantity, 0)
+  const totalPrice = cart.reduce((s, i) => s + i.price * i.quantity, 0)
 
   const filtered = catalog.filter(p =>
     p.product_name.toLowerCase().includes(search.toLowerCase())
@@ -28,61 +32,107 @@ export default function CatalogScreen() {
     })
   }
 
+  /* ── Error state ── */
   if (catalogError) {
     return (
       <div className="catalog-error-screen">
-        <div className="error-icon">⚠️</div>
+        <div className="error-icon-wrapper">
+          <span className="material-symbols-outlined" style={{ fontSize: 64, color: 'var(--error)', fontVariationSettings: "'FILL' 1" }}>
+            wifi_off
+          </span>
+        </div>
+        <h1 style={{ fontSize: 40, fontWeight: 700, letterSpacing: '-0.01em', color: 'var(--on-surface)' }}>
+          Unable to Load
+        </h1>
         <p className="catalog-error-msg">{catalogError}</p>
-        <button className="btn-home" onClick={() => goTo('idle')}>← Back to Start</button>
+        <button className="btn-home" style={{ maxWidth: 320 }} onClick={() => goTo('idle')}>
+          <span className="material-symbols-outlined">arrow_back</span>
+          Back to Start
+        </button>
       </div>
     )
   }
 
+  /* ── Loading state ── */
   if (catalog.length === 0) {
     return (
       <div className="catalog-loading-screen">
-        <div className="spinner" />
-        <p>Loading products...</p>
+        <div className="catalog-loading-logo">M9Vends</div>
+
+        <div style={{ position: 'relative', width: 128, height: 128, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', color: 'var(--surface-container-highest)' }} viewBox="25 25 50 50">
+            <circle cx="50" cy="50" fill="none" r="20" stroke="currentColor" strokeWidth="4" />
+          </svg>
+          <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} viewBox="25 25 50 50" className="svg-spinner">
+            <circle cx="50" cy="50" fill="none" r="20" />
+          </svg>
+        </div>
+
+        <div className="catalog-loading-text">
+          <p className="catalog-loading-title">Loading Catalog</p>
+          <p className="catalog-loading-sub">Retrieving real-time product availability...</p>
+        </div>
+
+        <div className="catalog-loading-bar">
+          <div className="catalog-loading-bar-fill" />
+        </div>
       </div>
     )
   }
 
+  /* ── Main catalog ── */
   return (
     <div className="catalog-screen">
       {/* Header */}
       <header className="catalog-header">
-        <button className="btn-back" onClick={() => goTo('idle')}>← Back</button>
-        <div className="catalog-header-logo">
-          <span className="boot-logo-m">M9</span><span className="boot-logo-v">Vends</span>
-        </div>
+        <button className="btn-back" onClick={() => goTo('idle')}>
+          <span className="material-symbols-outlined">arrow_back</span>
+          Back
+        </button>
+
+        <div className="catalog-header-logo">M9Vends</div>
+
         <button
           className="cart-badge-btn"
-          onClick={() => cartItemCount() > 0 && goTo('cart')}
+          onClick={() => totalQty > 0 && goTo('cart')}
+          aria-label="View Cart"
         >
-          🛒 <span className="cart-count">{cartItemCount()}</span>
+          <span className="material-symbols-outlined cart-icon">shopping_cart</span>
+          {totalQty > 0 && (
+            <span className="cart-count">{totalQty}</span>
+          )}
         </button>
       </header>
 
       {/* Search */}
       <div className="search-wrapper">
-        <input
-          className="catalog-search"
-          placeholder="🔍  Search products..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
+        <div className="search-inner">
+          <span className="material-symbols-outlined search-icon">search</span>
+          <input
+            className="catalog-search"
+            placeholder="Search products..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
       </div>
 
-      {/* Grid */}
+      {/* Product Grid */}
       <div className="product-grid">
         {filtered.length === 0 ? (
           <div className="catalog-empty">No products found</div>
         ) : (
           filtered.map(item => {
-            const qty = getQty(item.catalog_id)
-            const oos = item.stock === 0
+            const qty  = getQty(item.catalog_id)
+            const oos  = item.stock === 0
+            const low  = item.stock > 0 && item.stock <= 5
+            const inCart = qty > 0
+
             return (
-              <div key={item.catalog_id} className={`product-card${oos ? ' out-of-stock' : ''}`}>
+              <div
+                key={item.catalog_id}
+                className={`product-card${oos ? ' out-of-stock' : ''}${inCart ? ' in-cart' : ''}`}
+              >
                 {/* Image */}
                 <div className="product-image-wrapper">
                   {item.image_url ? (
@@ -91,14 +141,34 @@ export default function CatalogScreen() {
                       alt={item.product_name}
                       fill
                       className="product-img"
-                      style={{ objectFit: 'cover' }}
+                      style={{ objectFit: 'contain' }}
                       unoptimized
                     />
                   ) : (
                     <div className="product-img-placeholder">🥤</div>
                   )}
+
+                  {/* Slot chip */}
                   {item.slot_label && (
                     <span className="slot-chip">{item.slot_label}</span>
+                  )}
+
+                  {/* Stock badge */}
+                  {oos ? (
+                    <div className="stock-badge out-of-stock-badge">
+                      <span className="material-symbols-outlined" style={{ fontSize: 14 }}>block</span>
+                      Out of stock
+                    </div>
+                  ) : low ? (
+                    <div className="stock-badge low-stock">
+                      <span className="material-symbols-outlined" style={{ fontSize: 14 }}>warning</span>
+                      Only {item.stock} left
+                    </div>
+                  ) : (
+                    <div className="stock-badge in-stock">
+                      <span className="stock-dot" />
+                      In stock
+                    </div>
                   )}
                 </div>
 
@@ -111,28 +181,30 @@ export default function CatalogScreen() {
                   <div className="product-bottom-row">
                     <span className="product-price">₹{item.price}</span>
                     <div className={`stock-indicator ${item.stock > 5 ? 'high' : item.stock > 0 ? 'low' : 'none'}`}>
-                      {oos
-                        ? 'Out of stock'
-                        : item.stock <= 5
-                          ? `Only ${item.stock} left`
-                          : 'In stock'}
+                      {oos ? 'Out of stock' : item.stock <= 5 ? `Only ${item.stock} left` : 'In stock'}
                     </div>
                   </div>
                 </div>
 
                 {/* Cart control */}
                 {oos ? (
-                  <div className="oos-label">Unavailable</div>
+                  <div className="oos-label">NOT AVAILABLE</div>
                 ) : qty === 0 ? (
-                  <button className="btn-add" onClick={() => handleAdd(item)}>Add</button>
+                  <button className="btn-add" onClick={() => handleAdd(item)}>
+                    ADD TO CART
+                  </button>
                 ) : (
                   <div className="qty-control">
-                    <button onClick={() => updateQuantity(item.catalog_id, qty - 1)}>−</button>
+                    <button onClick={() => updateQuantity(item.catalog_id, qty - 1)}>
+                      <span className="material-symbols-outlined">remove</span>
+                    </button>
                     <span>{qty}</span>
                     <button
                       onClick={() => updateQuantity(item.catalog_id, qty + 1)}
                       disabled={qty >= item.stock}
-                    >+</button>
+                    >
+                      <span className="material-symbols-outlined">add</span>
+                    </button>
                   </div>
                 )}
               </div>
@@ -142,14 +214,17 @@ export default function CatalogScreen() {
       </div>
 
       {/* Sticky cart bar */}
-      {cartItemCount() > 0 && (
+      {totalQty > 0 && (
         <div className="cart-bar">
           <div className="cart-bar-info">
-            <span className="cart-bar-count">{cartItemCount()} {cartItemCount() === 1 ? 'item' : 'items'}</span>
-            <span className="cart-bar-total">₹{cartTotal()}</span>
+            <span className="cart-bar-count">
+              {totalQty} {totalQty === 1 ? 'item' : 'items'} in basket
+            </span>
+            <span className="cart-bar-total">₹{totalPrice}</span>
           </div>
           <button className="btn-checkout" onClick={() => goTo('cart')}>
-            Checkout →
+            Checkout
+            <span className="material-symbols-outlined">arrow_forward</span>
           </button>
         </div>
       )}

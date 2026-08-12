@@ -19,40 +19,72 @@ export default function SuccessScreen() {
 
   return (
     <div className="success-screen">
+      {/* Confetti */}
+      <div className="success-confetti">
+        <div className="confetti-piece" />
+        <div className="confetti-piece" />
+        <div className="confetti-piece" />
+        <div className="confetti-piece" />
+        <div className="confetti-piece" />
+        <div className="confetti-piece" />
+        <div className="confetti-piece" />
+        <div className="confetti-piece" />
+        <div className="confetti-piece" />
+        <div className="confetti-piece" />
+      </div>
+
       <div className="success-glow" />
 
-      <div className="success-icon-wrapper">
-        <div className="success-icon">✓</div>
-      </div>
+      {/* Card */}
+      <div className="success-card">
+        {/* Success icon */}
+        <div className="success-icon-wrapper">
+          <span className="material-symbols-outlined success-icon"
+            style={{ fontVariationSettings: "'FILL' 1", fontSize: 48 }}>
+            check
+          </span>
+        </div>
 
-      <h1 className="success-title">Payment Successful!</h1>
-      <p className="success-subtitle">Your order is being prepared 🎉</p>
+        {/* Heading */}
+        <h1 className="success-title">Payment Successful!</h1>
+        <p className="success-subtitle">Your order is being prepared. Please collect it below.</p>
 
-      <div className="order-summary">
-        {cart.map(item => (
-          <div key={item.catalog_id} className="summary-item">
-            <span>{item.product_name}</span>
-            <span>× {item.quantity}</span>
+        {/* Order summary */}
+        <div className="order-summary">
+          <p className="order-summary-title">Order Summary</p>
+
+          {cart.map(item => (
+            <div key={item.catalog_id} className="summary-item">
+              <span>{item.product_name} × {item.quantity}</span>
+              <span>₹{item.price * item.quantity}</span>
+            </div>
+          ))}
+
+          <div className="summary-divider" />
+          <div className="summary-total">
+            <span>Total Paid</span>
+            <strong>₹{currentOrder?.total_amount}</strong>
           </div>
-        ))}
-        <div className="summary-divider" />
-        <div className="summary-total">
-          <span>Total paid</span>
-          <strong>₹{currentOrder?.total_amount}</strong>
+        </div>
+
+        {/* Thank you */}
+        <p className="thank-you">Thank you for your purchase!</p>
+
+        {/* Auto-return */}
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+          <button className="btn-home" onClick={resetToIdle}>
+            <span className="material-symbols-outlined">restart_alt</span>
+            BACK TO START
+          </button>
+          <div className="auto-return-bar">
+            <div
+              className="auto-return-progress"
+              style={{ animationDuration: '5s' }}
+            />
+          </div>
+          <p className="auto-return-text">Auto-returning in {countdown}s...</p>
         </div>
       </div>
-
-      <p className="thank-you">Thank you for your purchase! 🙏</p>
-
-      <div className="auto-return-bar">
-        <div
-          className="auto-return-progress"
-          style={{ animationDuration: '5s' }}
-        />
-        <p className="auto-return-text">Returning to start in {countdown}s</p>
-      </div>
-
-      <button className="btn-home" onClick={resetToIdle}>↩ Back to Start</button>
     </div>
   )
 }

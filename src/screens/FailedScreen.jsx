@@ -20,16 +20,29 @@ export default function FailedScreen() {
 
   return (
     <div className="failed-screen">
-      <div className="failed-icon">{isTimeout ? '⏰' : '❌'}</div>
-      <h1 className="failed-title">{isTimeout ? 'Session Timed Out' : 'Payment Failed'}</h1>
-      <p className="failed-subtitle">Please try again or contact staff for assistance</p>
+      {/* Icon */}
+      <div className="failed-icon">
+        <span className="material-symbols-outlined"
+          style={{ fontSize: 64, color: 'var(--error)', fontVariationSettings: "'FILL' 1" }}>
+          {isTimeout ? 'timer_off' : 'cancel'}
+        </span>
+      </div>
+
+      <h1 className="failed-title">
+        {isTimeout ? 'Session Timed Out' : 'Payment Failed'}
+      </h1>
+      <p className="failed-subtitle">
+        Please try again or contact staff for assistance.
+      </p>
 
       <div className="failed-actions">
-        <button id="btn-retry" className="btn-retry" onClick={() => goTo('catalog')}>
-          🔄 Try Again
+        <button id="btn-retry" className="btn-retry" onClick={() => goTo('cart')}>
+          <span className="material-symbols-outlined">refresh</span>
+          Try Again
         </button>
-        <button className="btn-home" onClick={resetToIdle}>
-          ↩ Back to Start
+        <button className="btn-home" onClick={() => goTo('catalog')}>
+          <span className="material-symbols-outlined">restart_alt</span>
+          Back to Start
         </button>
       </div>
 

@@ -60,30 +60,70 @@ export default function CashPaymentScreen() {
     <div className="cash-screen">
       {/* Top bar */}
       <div className="payment-header">
-        <button className="btn-cancel" onClick={handleCancel}>✕ Cancel</button>
-        <div className="countdown">{mm}:{ss} ⏱</div>
+        <button className="btn-cancel" onClick={handleCancel}>
+          <span className="material-symbols-outlined">close</span>
+          Cancel
+        </button>
+        <div className="countdown">
+          <span className="material-symbols-outlined" style={{ fontSize: 24 }}>timer</span>
+          {mm}:{ss}
+        </div>
       </div>
 
       {/* Body */}
       <div className="cash-body">
-        <h2 className="cash-title">Pay with Cash</h2>
+        <div className="cash-content">
+          <h1 className="cash-title">Pay with Cash</h1>
 
-        <div className="order-id-box">
-          <p className="order-id-label">Show this to the attendant</p>
-          <div className="order-id-number">ORDER # {shortId}</div>
+          <div className="cash-grid">
+            {/* Left: amount + instructions + waiting */}
+            <div className="cash-left">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <span className="cash-amount-label">Total Amount</span>
+                <div className="cash-amount">₹{totalAmount}</div>
+              </div>
+
+              <div className="cash-divider" />
+
+              <div className="cash-instruction">
+                <span className="material-symbols-outlined cash-instruction-icon">payments</span>
+                <p>Please hand the exact cash amount to the nearby store attendant to complete your purchase.</p>
+              </div>
+
+              <div className="cash-divider" />
+
+              <div className="cash-waiting-area">
+                <div className="waiting-dots">
+                  <span /><span /><span />
+                </div>
+                <span className="cash-waiting-text">Waiting for attendant confirmation...</span>
+              </div>
+            </div>
+
+            {/* Right: order ID box */}
+            <div className="cash-right">
+              <div className="cash-right-pattern" />
+
+              <span className="cash-attendant-label">Show this to the attendant</span>
+
+              <div className="order-id-box">
+                <p className="order-id-label">Order Number</p>
+                <div className="order-id-number">ORDER # {shortId}</div>
+              </div>
+
+              <p className="cash-expiry-note">
+                Do not close this screen.<br />
+                Your order expires in <strong>{mm}:{ss}</strong>
+              </p>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="cash-footer">
+            <span className="material-symbols-outlined" style={{ color: 'var(--secondary)', fontSize: 20 }}>support_agent</span>
+            <span className="cash-footer-text">Need help? Ask the store attendant.</span>
+          </div>
         </div>
-
-        <div className="cash-amount">₹{totalAmount}</div>
-
-        <p className="cash-hint">
-          Hand ₹{totalAmount} cash to the attendant.<br />
-          They will confirm your order on the dashboard.
-        </p>
-
-        <div className="waiting-dots">
-          <span /><span /><span />
-        </div>
-        <p className="waiting-sub">Waiting for attendant confirmation...</p>
       </div>
     </div>
   )

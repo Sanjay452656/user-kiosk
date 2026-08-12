@@ -37,15 +37,20 @@ export default function CartScreen() {
 
   return (
     <div className="cart-screen">
+      {/* Header */}
       <header className="cart-header">
-        <button className="btn-back" onClick={() => goTo('catalog')}>← Back</button>
+        <button className="btn-back" onClick={() => goTo('catalog')}>
+          <span className="material-symbols-outlined">arrow_back</span>
+        </button>
         <h2 className="cart-header-title">Review Order</h2>
         <div className="cart-header-spacer" />
       </header>
 
+      {/* Scrollable items */}
       <div className="cart-items">
         {cart.map(item => (
           <div key={item.catalog_id} className="cart-item">
+            {/* Left: image + info */}
             <div className="cart-item-left">
               <div className="cart-item-img-placeholder">🥤</div>
               <div className="cart-item-info">
@@ -53,14 +58,20 @@ export default function CartScreen() {
                 <span className="cart-item-unit">₹{item.price} each</span>
               </div>
             </div>
+
+            {/* Right: qty stepper + subtotal */}
             <div className="cart-item-right">
               <div className="qty-control">
-                <button onClick={() => updateQuantity(item.catalog_id, item.quantity - 1)}>−</button>
+                <button onClick={() => updateQuantity(item.catalog_id, item.quantity - 1)}>
+                  <span className="material-symbols-outlined">remove</span>
+                </button>
                 <span>{item.quantity}</span>
                 <button
                   onClick={() => updateQuantity(item.catalog_id, item.quantity + 1)}
                   disabled={item.quantity >= item.stock}
-                >+</button>
+                >
+                  <span className="material-symbols-outlined">add</span>
+                </button>
               </div>
               <span className="cart-item-subtotal">₹{item.price * item.quantity}</span>
             </div>
@@ -68,34 +79,40 @@ export default function CartScreen() {
         ))}
       </div>
 
-      <div className="cart-total-row">
-        <span className="cart-total-label">Total</span>
-        <strong className="cart-total-value">₹{cartTotal()}</strong>
-      </div>
+      {/* Fixed bottom: total + payment */}
+      <div className="cart-bottom">
+        <div className="cart-total-row">
+          <span className="cart-total-label">{cart.length} {cart.length === 1 ? 'item' : 'items'} in Cart</span>
+          <div className="cart-total-area">
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+              <span style={{ fontSize: 28, fontWeight: 700, color: 'var(--primary)' }}>Total:</span>
+              <strong className="cart-total-value">₹{cartTotal()}</strong>
+            </div>
+            <span className="cart-total-sub">Including all taxes</span>
+          </div>
+        </div>
 
-      {error && <div className="cart-error">{error}</div>}
+        {error && <div className="cart-error">{error}</div>}
 
-      <div className="payment-buttons">
-        <button
-          id="btn-pay-upi"
-          className="btn-pay-upi"
-          onClick={() => handlePlaceOrder('UPI')}
-          disabled={loading}
-        >
-          {loading ? (
-            <span className="btn-loading"><span className="spinner-sm" /> Processing...</span>
-          ) : (
-            <>⚡ Pay ₹{cartTotal()} with UPI</>
-          )}
-        </button>
-        <button
-          id="btn-pay-cash"
-          className="btn-pay-cash"
-          onClick={() => handlePlaceOrder('CASH')}
-          disabled={loading}
-        >
-          💵 Pay with Cash
-        </button>
+        <div className="payment-buttons">
+          <button
+            id="btn-pay-upi"
+            className="btn-pay-upi"
+            onClick={() => handlePlaceOrder('UPI')}
+            disabled={loading}
+          >
+            {loading ? (
+              <span className="btn-loading">
+                <span className="spinner-sm" /> Processing...
+              </span>
+            ) : (
+              <>
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>qr_code_scanner</span>
+                PAY ₹{cartTotal()} WITH UPI
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   )
