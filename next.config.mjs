@@ -6,7 +6,7 @@ const nextConfig = {
     return [
       {
         source: '/api/public/:path*',
-        destination: 'http://localhost:5000/api/public/:path*',
+        destination: 'https://m9vends-saas-backend.onrender.com/api/public/:path*',
       },
       {
         source: '/api/device/:path*',
